@@ -1,0 +1,30 @@
+# ============================================
+# Lightweight Backend Dependencies (SQLite mode)
+# For hackathon demo — no Docker required
+# ============================================
+
+# --- Web Framework ---
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+httpx==0.27.0
+
+# --- Database (SQLite) ---
+sqlalchemy[asyncio]==2.0.31
+aiosqlite==0.20.0
+alembic==1.13.2
+
+# --- Data & Validation ---
+pydantic==2.7.4
+pydantic-settings==2.3.4
+orjson==3.10.5
+email-validator==2.2.0
+
+# --- Utilities ---
+structlog==24.2.0
+tenacity==8.4.1
+jinja2==3.1.4
+pyyaml==6.0.1
+aiofiles==23.2.1
+python-dateutil==2.9.0
+pillow==10.3.0
