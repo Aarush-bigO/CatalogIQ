@@ -10,7 +10,7 @@
 [![SQLite](https://img.shields.io/badge/Database-SQLite%20(aiosqlite)-003B57.svg?style=flat&logo=sqlite&logoColor=white)](https://sqlite.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
----
+----
 
 ## 📌 Executive Summary
 
