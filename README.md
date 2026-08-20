@@ -21,7 +21,7 @@ Industrial suppliers, distributors, and manufacturers manage vast catalogs of hi
 2. **Autonomous Gemini AI Enrichment:** Leverages Google Gemini 2.0 Flash to deduce missing engineering specifications, physical attributes, standardized taxonomy, and technical overviews.
 3. **Human-in-the-Loop (HITL) Validation:** An interactive diff review queue allowing domain experts to verify or reject AI proposals before publishing.
 4. **Industrial RAG & Semantic Search:** Natural language search across SKUs and engineering parameters with explainable matching rationale.
-
+5. 
 ---
 
 ## 🏗️ Architecture Overview
