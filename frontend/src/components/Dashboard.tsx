@@ -5,13 +5,13 @@ import {
   Sparkles,
   ClipboardCheck,
   TrendingUp,
-  AlertCircle,
   Zap,
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
 function StatCard({
   title,
@@ -27,18 +27,23 @@ function StatCard({
   subtext?: string
 }) {
   return (
-    <div className="card hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className="card flex-col justify-center relative overflow-hidden group"
+    >
+      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-white/5 to-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+      <div className="flex items-start justify-between z-10 relative">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">{title}</p>
-          <p className="text-2xl font-extrabold text-gray-900 mt-1">{value}</p>
-          {subtext && <p className="text-xs text-gray-500 mt-1">{subtext}</p>}
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/50">{title}</p>
+          <p className="text-3xl font-extrabold text-white mt-2 drop-shadow-md">{value}</p>
+          {subtext && <p className="text-xs text-white/40 mt-1">{subtext}</p>}
         </div>
-        <div className={`p-3 rounded-xl ${color} shadow-sm`}>
-          <Icon className="w-5 h-5 text-white" />
+        <div className={`p-3 rounded-xl ${color} shadow-lg shadow-black/20 ring-1 ring-white/10`}>
+          <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -52,28 +57,36 @@ function QualityDistribution({ data }: { data: Record<string, number> }) {
   }
 
   return (
-    <div className="card">
-      <h3 className="text-base font-bold text-gray-900 mb-4">Catalog Quality Index</h3>
-      <div className="space-y-3">
+    <motion.div
+      whileHover={{ scale: 1.01 }}
+      className="card"
+    >
+      <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+        <Sparkles className="w-5 h-5 text-purple-400" />
+        Catalog Quality Index
+      </h3>
+      <div className="space-y-4">
         {Object.entries(data).map(([label, count]) => {
           const pct = total > 0 ? (count / total) * 100 : 0
           return (
             <div key={label}>
               <div className="flex justify-between text-xs mb-1">
-                <span className="capitalize font-medium text-gray-600">{label}</span>
-                <span className="font-semibold text-gray-900">{count} ({pct.toFixed(1)}%)</span>
+                <span className="capitalize font-medium text-white/70">{label}</span>
+                <span className="font-semibold text-white/90">{count} ({pct.toFixed(1)}%)</span>
               </div>
-              <div className="quality-bar">
-                <div
-                  className={`quality-fill ${colors[label] || 'bg-gray-400'}`}
-                  style={{ width: `${pct}%` }}
+              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className={`h-full ${colors[label] || 'bg-gray-400'} shadow-[0_0_10px_currentColor]`}
                 />
               </div>
             </div>
           )
         })}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -87,42 +100,45 @@ function StatusBreakdown({
   const total = Object.values(data).reduce((a, b) => a + b, 0)
 
   return (
-    <div className="card">
-      <h3 className="text-base font-bold text-gray-900 mb-4">{title}</h3>
-      <div className="space-y-2.5">
+    <motion.div whileHover={{ scale: 1.01 }} className="card">
+      <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+        <TrendingUp className="w-5 h-5 text-blue-400" />
+        {title}
+      </h3>
+      <div className="space-y-3">
         {Object.entries(data).map(([status, count]) => (
-          <div key={status} className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
+          <div key={status} className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-3">
               <StatusDot status={status} />
-              <span className="capitalize font-medium text-gray-700">{status.replace(/_/g, ' ')}</span>
+              <span className="capitalize font-medium text-white/70">{status.replace(/_/g, ' ')}</span>
             </div>
-            <span className="font-semibold text-gray-900">{count}</span>
+            <span className="font-semibold text-white/90 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">{count}</span>
           </div>
         ))}
-        <div className="pt-2.5 border-t border-gray-100 flex justify-between text-xs">
-          <span className="font-medium text-gray-500">Total</span>
-          <span className="font-bold text-gray-900">{total}</span>
+        <div className="pt-3 mt-3 border-t border-white/10 flex justify-between text-sm">
+          <span className="font-medium text-white/50">Total</span>
+          <span className="font-bold text-white">{total}</span>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 function StatusDot({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    published: 'bg-green-500',
-    validated: 'bg-green-500',
-    completed: 'bg-green-500',
-    draft: 'bg-gray-400',
-    enriching: 'bg-blue-500',
-    pending_validation: 'bg-yellow-500',
-    rejected: 'bg-red-500',
-    failed: 'bg-red-500',
-    pending: 'bg-yellow-500',
-    queued: 'bg-blue-400',
-    running: 'bg-blue-500',
+    published: 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]',
+    validated: 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]',
+    completed: 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]',
+    draft: 'bg-gray-400 shadow-[0_0_8px_rgba(156,163,175,0.6)]',
+    enriching: 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]',
+    pending_validation: 'bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.6)]',
+    rejected: 'bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)]',
+    failed: 'bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)]',
+    pending: 'bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.6)]',
+    queued: 'bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.6)]',
+    running: 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]',
   }
-  return <div className={`w-2 h-2 rounded-full ${colors[status] || 'bg-gray-400'}`} />
+  return <div className={`w-2.5 h-2.5 rounded-full ${colors[status] || 'bg-gray-400'}`} />
 }
 
 export default function Dashboard() {
@@ -141,46 +157,61 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 shadow-[0_0_15px_rgba(0,240,255,0.5)]" />
       </div>
     )
   }
 
-  if (!stats) return <div>Error loading dashboard</div>
+  if (!stats) return <div className="text-white">Error loading dashboard</div>
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
       {/* Hero Welcome Banner */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 rounded-2xl p-6 sm:p-8 text-white shadow-xl shadow-blue-900/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="space-y-2 max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold text-blue-100 border border-white/20">
-            <Zap className="w-3.5 h-3.5 text-yellow-300" />
+      <motion.div
+        whileHover={{ scale: 1.005 }}
+        className="relative overflow-hidden bg-gradient-to-br from-primary-900/80 via-dark-800/80 to-purple-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 sm:p-10 text-white shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-8"
+      >
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/20 rounded-full blur-[80px]" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full blur-[60px]" />
+
+        <div className="space-y-4 max-w-2xl relative z-10">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 backdrop-blur-md rounded-full text-xs font-semibold text-primary-200 border border-primary-500/30 shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+          >
+            <Zap className="w-4 h-4 text-primary-400" />
             <span>Autonomous Industrial Product Intelligence</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          </motion.div>
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-primary-200 to-purple-300 drop-shadow-sm">
             Welcome to CatalogIQ
           </h1>
-          <p className="text-sm text-blue-100 leading-relaxed">
-            Automating engineering spec extraction, Gemini AI enrichment, and human-in-the-loop catalog verification across {productStats?.total ?? 0} industrial parts.
+          <p className="text-base text-white/70 leading-relaxed font-light">
+            Automating engineering spec extraction, Gemini AI enrichment, and human-in-the-loop catalog verification across <strong className="text-primary-300 font-bold">{productStats?.total ?? 0}</strong> industrial parts.
           </p>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-4 relative z-10">
           <Link
             to="/documents"
-            className="px-4 py-2.5 bg-white text-blue-900 rounded-xl font-bold text-xs hover:bg-blue-50 transition-colors shadow-sm flex items-center gap-2"
+            className="px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-bold text-sm transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] flex items-center gap-2 hover:-translate-y-1"
           >
-            <FileText className="w-4 h-4 text-blue-600" />
+            <FileText className="w-5 h-5" />
             Upload Document
           </Link>
           <Link
             to="/validation"
-            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-semibold text-xs transition-colors flex items-center gap-2"
+            className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/20 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 hover:-translate-y-1 backdrop-blur-md"
           >
-            <ShieldCheck className="w-4 h-4 text-green-300" />
+            <ShieldCheck className="w-5 h-5 text-green-400" />
             Validation Queue ({stats.validation.pending_reviews})
           </Link>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -229,40 +260,43 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div className="card">
-        <h3 className="text-base font-bold text-gray-900 mb-3">Quick Navigation</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-yellow-400" />
+          Quick Navigation
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Link
             to="/products"
-            className="p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl border border-gray-200 transition-colors flex items-center justify-between group"
+            className="p-5 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all flex items-center justify-between group hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
           >
             <div>
-              <p className="text-sm font-bold text-gray-900 group-hover:text-blue-600">Product Catalog</p>
-              <p className="text-xs text-gray-500">View specs, descriptions & quality</p>
+              <p className="text-sm font-bold text-white group-hover:text-primary-300 transition-colors">Product Catalog</p>
+              <p className="text-xs text-white/50 mt-1">View specs, descriptions & quality</p>
             </div>
-            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
+            <ArrowRight className="w-5 h-5 text-white/30 group-hover:text-primary-400 transition-colors" />
           </Link>
           <Link
             to="/search"
-            className="p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl border border-gray-200 transition-colors flex items-center justify-between group"
+            className="p-5 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all flex items-center justify-between group hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
           >
             <div>
-              <p className="text-sm font-bold text-gray-900 group-hover:text-blue-600">Intelligent Search</p>
-              <p className="text-xs text-gray-500">Semantic RAG industrial part search</p>
+              <p className="text-sm font-bold text-white group-hover:text-primary-300 transition-colors">Intelligent Search</p>
+              <p className="text-xs text-white/50 mt-1">Semantic RAG industrial part search</p>
             </div>
-            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
+            <ArrowRight className="w-5 h-5 text-white/30 group-hover:text-primary-400 transition-colors" />
           </Link>
           <Link
             to="/enrichment"
-            className="p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl border border-gray-200 transition-colors flex items-center justify-between group"
+            className="p-5 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all flex items-center justify-between group hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
           >
             <div>
-              <p className="text-sm font-bold text-gray-900 group-hover:text-blue-600">AI Enrichment Stream</p>
-              <p className="text-xs text-gray-500">Monitor live Gemini generation jobs</p>
+              <p className="text-sm font-bold text-white group-hover:text-primary-300 transition-colors">AI Enrichment Stream</p>
+              <p className="text-xs text-white/50 mt-1">Monitor live Gemini generation jobs</p>
             </div>
-            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
+            <ArrowRight className="w-5 h-5 text-white/30 group-hover:text-primary-400 transition-colors" />
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

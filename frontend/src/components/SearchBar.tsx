@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useSearch } from '../hooks/useSearch'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search, SlidersHorizontal, Sparkles, Zap, Box } from 'lucide-react'
 
 export default function SearchBar() {
   const [query, setQuery] = useState('')
@@ -8,92 +9,132 @@ export default function SearchBar() {
   const { data, isLoading } = useSearch(query, searchType)
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Search Catalog</h1>
-        <p className="text-gray-500 mt-1">Semantic, keyword, and hybrid search across products</p>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-8"
+    >
+      <div className="text-center space-y-4 mb-10">
+        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-200 via-white to-primary-300 drop-shadow-sm">Intelligent Search</h1>
+        <p className="text-white/60 font-medium max-w-xl mx-auto">Semantic, keyword, and hybrid RAG search powered by Google Gemini embeddings.</p>
       </div>
 
-      <div className="card">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <motion.div
+        whileHover={{ scale: 1.01 }}
+        className="card relative overflow-hidden group border border-white/20 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-purple-500/5 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-[80px] group-hover:bg-primary-500/20 transition-colors duration-500 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1 group/input">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-white/40 group-focus-within/input:text-primary-400 transition-colors drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]" />
             <input
               type="text"
-              placeholder="Search products, SKUs, specifications..."
-              className="input pl-11 py-3 text-lg"
+              placeholder="Search products, SKUs, engineering specifications..."
+              className="w-full bg-dark-800/80 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-lg text-white placeholder-white/30 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/50 transition-all shadow-inner backdrop-blur-xl font-bold"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-3">
+            <div className="p-4 bg-dark-800/80 border border-white/10 rounded-2xl flex items-center justify-center shadow-inner">
+              <SlidersHorizontal className="w-5 h-5 text-white/50" />
+            </div>
             <select
-              className="input w-36"
+              className="bg-dark-800/80 border border-white/10 rounded-2xl px-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/50 transition-all appearance-none cursor-pointer shadow-inner backdrop-blur-xl min-w-[140px]"
               value={searchType}
               onChange={(e) => setSearchType(e.target.value)}
             >
-              <option value="hybrid">Hybrid</option>
-              <option value="semantic">Semantic</option>
-              <option value="keyword">Keyword</option>
-              <option value="graph">Graph</option>
+              <option value="hybrid" className="bg-dark-800">Hybrid Match</option>
+              <option value="semantic" className="bg-dark-800">Semantic AI</option>
+              <option value="keyword" className="bg-dark-800">Exact Keyword</option>
+              <option value="graph" className="bg-dark-800">Knowledge Graph</option>
             </select>
           </div>
         </div>
 
-        {data && query.length > 2 && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm text-gray-500">
-                {data.total_results} results in {data.execution_time_ms}ms
-              </p>
-            </div>
+        <AnimatePresence>
+          {data && query.length > 2 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-6 pt-6 border-t border-white/10 relative z-10"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-sm font-bold text-white/50 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary-400" />
+                  {data.total_results} matching results found in <span className="text-primary-300 font-mono">{data.execution_time_ms}ms</span>
+                </p>
+              </div>
 
-            <div className="space-y-3">
-              {data.results.map((result) => (
-                <div
-                  key={result.product_id}
-                  className="p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 transition-colors"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{result.name}</h4>
-                      <p className="text-sm text-gray-500 mt-0.5">SKU: {result.sku}</p>
-                      {result.category && (
-                        <span className="badge-blue mt-2">{result.category}</span>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <span className="text-sm font-semibold text-blue-600">
-                        {(result.score * 100).toFixed(1)}% match
-                      </span>
-                      <p className="text-xs text-gray-400 mt-0.5">{result.matched_field}</p>
-                    </div>
-                  </div>
-                  {result.explanation && (
-                    <p className="text-sm text-gray-600 mt-2">{result.explanation}</p>
-                  )}
-                  {result.attributes && Object.keys(result.attributes).length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {Object.entries(result.attributes).slice(0, 5).map(([key, value]) => (
-                        <span key={key} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                          {key}: {String(value)}
+              <div className="space-y-4">
+                {data.results.map((result, idx) => (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    key={result.product_id}
+                    className="p-5 rounded-2xl bg-dark-800/60 border border-white/5 hover:border-primary-500/30 hover:bg-white/5 transition-all shadow-inner group/item backdrop-blur-md"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-lg font-bold text-white group-hover/item:text-primary-200 transition-colors flex items-center gap-2">
+                          <Box className="w-5 h-5 text-purple-400 opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                          {result.name}
+                        </h4>
+                        <p className="text-sm text-white/50 mt-1 flex items-center gap-2">
+                          <span className="px-2 py-0.5 bg-white/5 rounded text-primary-300 font-mono text-xs border border-white/10">SKU: {result.sku}</span>
+                        </p>
+                        {result.category && (
+                          <span className="inline-block px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30 shadow-[0_0_8px_rgba(59,130,246,0.2)] mt-3">
+                            {result.category}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-black text-green-400 bg-green-500/10 px-3 py-1 rounded-lg border border-green-500/20 flex items-center gap-1.5 shadow-[0_0_10px_rgba(34,197,94,0.2)]">
+                          <Zap className="w-3.5 h-3.5" />
+                          {(result.score * 100).toFixed(1)}% Match
                         </span>
-                      ))}
+                        <p className="text-xs font-bold text-white/40 mt-2 uppercase tracking-wider">{result.matched_field}</p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                    {result.explanation && (
+                      <p className="text-sm text-white/70 mt-4 leading-relaxed bg-white/5 p-3 rounded-xl border border-white/5">
+                        {result.explanation}
+                      </p>
+                    )}
+                    {result.attributes && Object.keys(result.attributes).length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {Object.entries(result.attributes).slice(0, 5).map(([key, value]) => (
+                          <span key={key} className="text-xs font-bold bg-dark-800 text-white/60 px-2.5 py-1 rounded-md border border-white/10">
+                            <span className="text-white/40 capitalize mr-1">{key.replace(/_/g, ' ')}:</span> {String(value)}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {isLoading && (
-          <div className="mt-4 flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
-          </div>
-        )}
-      </div>
-    </div>
+        <AnimatePresence>
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-8 flex items-center justify-center py-12"
+            >
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 shadow-[0_0_15px_rgba(0,240,255,0.5)]" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
   )
 }
