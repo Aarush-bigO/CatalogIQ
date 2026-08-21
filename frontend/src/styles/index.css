@@ -5,65 +5,150 @@
 @layer base {
   html {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.015em;
   }
-  
+
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-black dark:text-zinc-100 transition-colors duration-150;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Clean responsive scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(160, 160, 160, 0.25);
+    border-radius: 9999px;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(160, 160, 160, 0.4);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 
 @layer components {
-  .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  /* ── Precision Panels (Adaptive Light & Dark) ── */
+  .panel-glass,
+  .panel-precision {
+    @apply bg-white border border-zinc-200/90 rounded-xl shadow-sm text-zinc-900 dark:bg-[#09090B] dark:border-white/[0.08] dark:shadow-none dark:text-zinc-100 transition-colors duration-150;
   }
-  
+
+  .panel-glass-interactive,
+  .panel-precision-interactive {
+    @apply bg-white border border-zinc-200/90 rounded-xl shadow-sm text-zinc-900 dark:bg-[#09090B] dark:border-white/[0.08] dark:shadow-none dark:text-zinc-100 transition-all duration-150;
+  }
+
+  .panel-glass-interactive:hover,
+  .panel-precision-interactive:hover {
+    @apply bg-zinc-50/80 border-zinc-300 shadow-md dark:bg-[#121215] dark:border-white/20 dark:shadow-lg -translate-y-0.5;
+  }
+
+  .panel-elevated {
+    @apply bg-white border border-zinc-200 rounded-2xl shadow-md text-zinc-900 dark:bg-[#0C0C0E] dark:border-white/10 dark:shadow-2xl dark:text-zinc-100 transition-colors duration-150;
+  }
+
+  /* ── Tactile High-Contrast Buttons with Comfortable Sizing ── */
   .btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-lg font-medium 
-           hover:bg-blue-700 active:bg-blue-800 transition-colors
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 font-medium text-white bg-zinc-950 hover:bg-zinc-800 active:bg-zinc-900 border border-zinc-950 dark:bg-white dark:text-black dark:hover:bg-zinc-200 dark:active:bg-zinc-300 dark:border-white transition-all duration-150 cursor-pointer shadow-sm rounded-lg px-4 py-2 text-sm;
   }
-  
+
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
   .btn-secondary {
-    @apply px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium
-           hover:bg-gray-50 active:bg-gray-100 transition-colors
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 font-medium text-zinc-700 hover:text-zinc-950 bg-white hover:bg-zinc-100 border border-zinc-200/90 shadow-sm dark:bg-[#18181B] dark:text-zinc-200 dark:hover:text-white dark:hover:bg-[#27272A] dark:border-white/10 dark:shadow-none transition-all duration-150 cursor-pointer rounded-lg px-4 py-2 text-sm;
   }
-  
-  .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg 
-           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-           placeholder:text-gray-400;
+
+  .btn-secondary:active {
+    transform: scale(0.98);
   }
-  
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+
+  .btn-emerald {
+    @apply inline-flex items-center justify-center gap-2 font-medium text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-900 dark:bg-white dark:text-black dark:hover:bg-zinc-200 dark:border-white rounded-lg px-4 py-2 text-sm transition-all duration-150 cursor-pointer;
   }
-  
-  .badge-green {
-    @apply badge bg-green-100 text-green-800;
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 dark:bg-[#271216] dark:text-rose-300 dark:hover:bg-[#3B1218] dark:border-rose-900/60 rounded-lg px-4 py-2 text-sm transition-all duration-150 cursor-pointer;
   }
-  
-  .badge-yellow {
-    @apply badge bg-yellow-100 text-yellow-800;
+
+  /* ── Form Inputs with Comfortable Touch Targets ── */
+  .input-glass,
+  .input-precision {
+    @apply w-full bg-white text-zinc-900 placeholder-zinc-400 border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm transition-all duration-150 shadow-sm focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900/20 dark:bg-[#09090B] dark:text-zinc-100 dark:border-white/10 dark:placeholder-zinc-500 dark:shadow-none dark:focus:border-white/40 dark:focus:ring-white/10;
   }
-  
-  .badge-red {
-    @apply badge bg-red-100 text-red-800;
+
+  /* ── Badges & Status Pills ── */
+  .badge-glass-brand,
+  .badge-iris {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-zinc-100 text-zinc-800 border border-zinc-200 dark:bg-white/[0.08] dark:text-zinc-200 dark:border-white/15;
   }
-  
-  .badge-blue {
-    @apply badge bg-blue-100 text-blue-800;
+
+  .badge-glass-emerald,
+  .badge-sage {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80 dark:bg-white/[0.08] dark:text-zinc-200 dark:border-white/15;
   }
-  
-  .badge-gray {
-    @apply badge bg-gray-100 text-gray-800;
+
+  .badge-glass-amber,
+  .badge-amber {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200/80 dark:bg-white/[0.08] dark:text-zinc-200 dark:border-white/15;
   }
-  
-  .quality-bar {
-    @apply h-2 rounded-full overflow-hidden bg-gray-200;
+
+  .badge-glass-rose,
+  .badge-coral {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200/80 dark:bg-white/[0.08] dark:text-zinc-200 dark:border-white/15;
   }
-  
-  .quality-fill {
-    @apply h-full rounded-full transition-all duration-500;
+
+  .badge-glass-cyan,
+  .badge-slate {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-white/[0.06] dark:text-zinc-400 dark:border-white/10;
   }
 }
+
+/* ── Minimal Scanning Bar ── */
+@keyframes laserScan {
+  0% {
+    top: 0%;
+    opacity: 0.4;
+  }
+  50% {
+    top: 96%;
+    opacity: 0.9;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.4;
+  }
+}
+
+.laser-scanner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.8), transparent);
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.2);
+  animation: laserScan 2.6s ease-in-out infinite;
+}
+
+.dark .laser-scanner {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.4);
+}
+
+
+
+

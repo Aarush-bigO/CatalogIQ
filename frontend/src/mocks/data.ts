@@ -5,7 +5,6 @@
 
 import type {
   Product,
-  ProductListResponse,
   Document,
   SearchResult,
   EnrichmentJob,

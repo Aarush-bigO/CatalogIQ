@@ -1,10 +1,19 @@
 """Main FastAPI application entry point."""
 
+import sys
 import time
 from contextlib import asynccontextmanager
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import ORJSONResponse
 
@@ -12,6 +21,7 @@ from app.config import get_settings
 from app.database import close_db, get_db_session, init_db
 from app.routers import (
     analytics,
+    chat,
     documents,
     enrichment,
     products,
@@ -120,6 +130,7 @@ app.include_router(search, prefix="/api/v1/search", tags=["Search"])
 app.include_router(enrichment, prefix="/api/v1/enrichment", tags=["Enrichment"])
 app.include_router(validation, prefix="/api/v1/validation", tags=["Validation"])
 app.include_router(analytics, prefix="/api/v1/analytics", tags=["Analytics"])
+app.include_router(chat, prefix="/api/v1/chat", tags=["Chat"])
 
 
 if __name__ == "__main__":

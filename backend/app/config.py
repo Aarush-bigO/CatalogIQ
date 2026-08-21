@@ -2,7 +2,16 @@
 
 import os
 from functools import lru_cache
+from pathlib import Path
 from typing import List, Optional
+from dotenv import load_dotenv
+
+# Search and load .env from current dir, backend dir, and root dir
+base_dir = Path(__file__).resolve().parent.parent
+root_dir = base_dir.parent
+for env_path in [base_dir / ".env", root_dir / ".env", Path(".env")]:
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path, override=True)
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -12,7 +21,7 @@ class Settings(BaseSettings):
     """Centralized application settings loaded from environment variables."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -33,11 +42,14 @@ class Settings(BaseSettings):
     database_echo: bool = Field(default=False, alias="DATABASE_ECHO")
 
     # Mock AI mode (auto-disabled if Gemini API key is provided)
-    use_mock_ai: bool = Field(default=True, alias="USE_MOCK_AI")
+    use_mock_ai: bool = Field(default=False, alias="USE_MOCK_AI")
 
-    # Gemini AI Provider
-    gemini_api_key: Optional[str] = Field(default=None, alias="GEMINI_API_KEY")
-    gemini_model: str = Field(default="gemini-2.0-flash", alias="GEMINI_MODEL")
+    # Gemini AI Provider (supports GEMINI_API_KEY, GOOGLE_API_KEY)
+    gemini_api_key: Optional[str] = Field(
+        default_factory=lambda: os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_KEY"),
+        alias="GEMINI_API_KEY",
+    )
+    gemini_model: str = Field(default="gemini-3.1-flash-lite", alias="GEMINI_MODEL")
 
     # Alternative LLM Providers
     openai_api_key: Optional[str] = Field(default=None, alias="OPENAI_API_KEY")
@@ -45,6 +57,7 @@ class Settings(BaseSettings):
 
     anthropic_api_key: Optional[str] = Field(default=None, alias="ANTHROPIC_API_KEY")
     anthropic_model: str = Field(default="claude-3-5-sonnet-20241022", alias="ANTHROPIC_MODEL")
+
 
     # Upload
     max_upload_size_mb: int = Field(default=50, alias="MAX_UPLOAD_SIZE_MB")

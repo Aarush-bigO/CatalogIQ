@@ -4,6 +4,14 @@ import logging
 import sys
 from typing import Any, Dict
 
+# Ensure UTF-8 output on Windows consoles
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 import structlog
 
 from app.config import get_settings
@@ -18,6 +26,7 @@ def configure_logging():
         stream=sys.stdout,
         level=getattr(logging, settings.log_level.upper(), logging.INFO),
     )
+
     
     structlog.configure(
         processors=[
